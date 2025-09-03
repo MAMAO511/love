@@ -1,0 +1,1018 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>狮母助手 - 实用工具集合</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        // 配置Tailwind自定义颜色和字体
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        neutral: '#64748B',
+                        dark: '#1E293B',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            .transition-custom {
+                transition: all 0.3s ease;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-wrench text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-dark">狮母助手</h1>
+            </div>
+            
+            <!-- 桌面导航 -->
+            <nav class="hidden md:flex space-x-6">
+                <button class="tool-btn active px-3 py-2 rounded-md font-medium transition-custom hover:text-primary" data-target="calculator">计算器</button>
+                <button class="tool-btn px-3 py-2 rounded-md font-medium transition-custom hover:text-primary" data-target="converter">单位换算</button>
+                <button class="tool-btn px-3 py-2 rounded-md font-medium transition-custom hover:text-primary" data-target="todo">待办清单</button>
+                <button class="tool-btn px-3 py-2 rounded-md font-medium transition-custom hover:text-primary" data-target="notes">笔记</button>
+            </nav>
+            
+            <!-- 移动端菜单按钮 -->
+            <button class="md:hidden text-gray-600 focus:outline-none" id="menu-toggle">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <button class="tool-btn active py-2 rounded-md font-medium text-left transition-custom hover:text-primary" data-target="calculator">计算器</button>
+                <button class="tool-btn py-2 rounded-md font-medium text-left transition-custom hover:text-primary" data-target="converter">单位换算</button>
+                <button class="tool-btn py-2 rounded-md font-medium text-left transition-custom hover:text-primary" data-target="todo">待办清单</button>
+                <button class="tool-btn py-2 rounded-md font-medium text-left transition-custom hover:text-primary" data-target="notes">笔记</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="container mx-auto px-4 pt-24 pb-16">
+        <!-- 工具标题区 -->
+        <div class="mb-8 text-center">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark" id="tool-title">计算器</h2>
+            <p class="text-neutral mt-2" id="tool-description">简单实用的计算器，支持基本运算和科学计算功能</p>
+        </div>
+        
+        <!-- 工具内容区 -->
+        <div class="max-w-3xl mx-auto">
+            <!-- 计算器工具 -->
+            <div class="tool-content active bg-white rounded-xl p-6 card-shadow" id="calculator">
+                <div class="calculator">
+                    <!-- 显示区域 -->
+                    <div class="mb-4">
+                        <div class="text-right text-neutral h-6 mb-1" id="calc-history"></div>
+                        <div class="bg-gray-100 rounded-lg p-4 h-16 text-right text-2xl md:text-3xl font-semibold overflow-x-auto" id="calc-display">0</div>
+                    </div>
+                    
+                    <!-- 按钮区域 -->
+                    <div class="grid grid-cols-4 gap-3">
+                        <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="C">C</button>
+                        <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="±">±</button>
+                        <button class="calc-btn bg-gray-200 hover:bg-gray-300 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="%">%</button>
+                        <button class="calc-btn bg-primary hover:bg-primary/90 text-white py-3 px-2 rounded-lg font-medium transition-custom" data-value="/">÷</button>
+                        
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="7">7</button>
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="8">8</button>
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="9">9</button>
+                        <button class="calc-btn bg-primary hover:bg-primary/90 text-white py-3 px-2 rounded-lg font-medium transition-custom" data-value="*">×</button>
+                        
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="4">4</button>
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="5">5</button>
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="6">6</button>
+                        <button class="calc-btn bg-primary hover:bg-primary/90 text-white py-3 px-2 rounded-lg font-medium transition-custom" data-value="-">-</button>
+                        
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="1">1</button>
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="2">2</button>
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value="3">3</button>
+                        <button class="calc-btn bg-primary hover:bg-primary/90 text-white py-3 px-2 rounded-lg font-medium transition-custom" data-value="+">+</button>
+                        
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom col-span-1" data-value="0">0</button>
+                        <button class="calc-btn bg-gray-100 hover:bg-gray-200 text-dark py-3 px-2 rounded-lg font-medium transition-custom" data-value=".">.</button>
+                        <button class="calc-btn bg-secondary hover:bg-secondary/90 text-white py-3 px-2 rounded-lg font-medium transition-custom col-span-2" data-value="=">=</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 单位换算工具 -->
+            <div class="tool-content hidden bg-white rounded-xl p-6 card-shadow" id="converter">
+                <div class="converter">
+                    <!-- 换算类型选择 -->
+                    <div class="mb-6">
+                        <label class="block text-neutral mb-2 font-medium">换算类型</label>
+                        <select id="convert-type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom">
+                            <option value="length">长度</option>
+                            <option value="weight">重量</option>
+                            <option value="volume">体积</option>
+                            <option value="temperature">温度</option>
+                            <option value="time">时间</option>
+                            <option value="currency">货币 (人民币-美元-欧元)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 换算输入区域 -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-neutral mb-2 font-medium">从</label>
+                            <div class="flex space-x-3">
+                                <input type="number" id="convert-from-value" class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom" value="1">
+                                <select id="convert-from-unit" class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom">
+                                    <!-- 选项会根据换算类型动态生成 -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                            <button id="swap-units" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-custom">
+                                <i class="fa fa-exchange text-neutral"></i>
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-neutral mb-2 font-medium">到</label>
+                            <div class="flex space-x-3">
+                                <input type="number" id="convert-to-value" class="flex-1 p-3 border border-gray-300 rounded-lg bg-gray-50" readonly="">
+                                <select id="convert-to-unit" class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom">
+                                    <!-- 选项会根据换算类型动态生成 -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <button id="convert-btn" class="w-full bg-primary hover:bg-primary/90 text-white py-3 px-4 rounded-lg font-medium transition-custom flex items-center justify-center">
+                                <i class="fa fa-calculator mr-2"></i> 进行换算
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 待办清单工具 -->
+            <div class="tool-content hidden bg-white rounded-xl p-6 card-shadow" id="todo">
+                <div class="todo-list">
+                    <!-- 添加待办事项 -->
+                    <div class="mb-6">
+                        <div class="flex space-x-3">
+                            <input type="text" id="todo-input" placeholder="添加新的待办事项..." class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom">
+                            <button id="add-todo" class="bg-secondary hover:bg-secondary/90 text-white py-3 px-6 rounded-lg font-medium transition-custom">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 待办事项过滤 -->
+                    <div class="mb-6 flex flex-wrap gap-2">
+                        <button class="todo-filter-btn active px-4 py-2 rounded-full bg-primary text-white font-medium transition-custom" data-filter="all">全部</button>
+                        <button class="todo-filter-btn px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 font-medium transition-custom" data-filter="active">未完成</button>
+                        <button class="todo-filter-btn px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 font-medium transition-custom" data-filter="completed">已完成</button>
+                    </div>
+                    
+                    <!-- 待办事项列表 -->
+                    <div id="todo-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                        <!-- 待办事项会动态添加到这里 -->
+                    </div>
+                    
+                    <!-- 清空已完成按钮 -->
+                    <div class="mt-6 text-center">
+                        <button id="clear-completed" class="text-neutral hover:text-red-500 px-4 py-2 font-medium transition-custom">
+                            <i class="fa fa-trash-o mr-1"></i> 清空已完成
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 笔记工具 -->
+            <div class="tool-content hidden bg-white rounded-xl p-6 card-shadow" id="notes">
+                <div class="notes">
+                    <!-- 笔记标题和内容 -->
+                    <div class="mb-6">
+                        <input type="text" id="note-title" placeholder="笔记标题..." class="w-full p-3 border-b border-gray-300 text-xl font-semibold focus:outline-none focus:border-primary transition-custom mb-4">
+                        <textarea id="note-content" placeholder="在这里输入笔记内容..." class="w-full p-3 border border-gray-300 rounded-lg min-h-[300px] focus:ring-2 focus:ring-primary focus:border-primary transition-custom"></textarea>
+                    </div>
+                    
+                    <!-- 笔记操作按钮 -->
+                    <div class="flex flex-wrap gap-3">
+                        <button id="save-note" class="bg-secondary hover:bg-secondary/90 text-white py-2 px-6 rounded-lg font-medium transition-custom">
+                            <i class="fa fa-save mr-1"></i> 保存笔记
+                        </button>
+                        <button id="new-note" class="bg-primary hover:bg-primary/90 text-white py-2 px-6 rounded-lg font-medium transition-custom">
+                            <i class="fa fa-file-o mr-1"></i> 新笔记
+                        </button>
+                        <button id="delete-note" class="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-lg font-medium transition-custom">
+                            <i class="fa fa-trash-o mr-1"></i> 删除笔记
+                        </button>
+                    </div>
+                    
+                    <!-- 笔记列表 -->
+                    <div class="mt-8">
+                        <h3 class="text-lg font-semibold mb-3 text-neutral">我的笔记</h3>
+                        <div id="notes-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                            <!-- 笔记列表会动态添加到这里 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa fa-wrench text-primary"></i>
+                        <span class="font-bold">狮母助手</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">让日常生活更便捷&nbsp; &nbsp;&nbsp;</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-custom">
+                        <i class="fa fa-question-circle"></i> 帮助
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-custom">
+                        <i class="fa fa-info-circle"></i> 关于
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-custom">
+                        <i class="fa fa-envelope"></i> 联系我们
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm">
+                © 2025 日常助手
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知提示组件 -->
+    <div id="notification" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center max-w-xs"></div>
+
+    <script>
+        // DOM元素引用
+        const navbar = document.getElementById('navbar');
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const toolBtns = document.querySelectorAll('.tool-btn');
+        const toolContents = document.querySelectorAll('.tool-content');
+        const toolTitle = document.getElementById('tool-title');
+        const toolDescription = document.getElementById('tool-description');
+        const notification = document.getElementById('notification');
+        
+        // 工具描述信息
+        const toolInfo = {
+            calculator: {
+                title: '计算器',
+                description: '简单实用的计算器，支持基本运算和科学计算功能'
+            },
+            converter: {
+                title: '单位换算',
+                description: '支持长度、重量、体积、温度、时间和货币等多种单位换算'
+            },
+            todo: {
+                title: '待办清单',
+                description: '管理您的日常任务，提高工作效率'
+            },
+            notes: {
+                title: '笔记',
+                description: '快速记录和管理您的想法和重要信息'
+            }
+        };
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                navbar.classList.add('py-2', 'shadow-lg');
+                navbar.classList.remove('py-3', 'shadow-md');
+            } else {
+                navbar.classList.add('py-3', 'shadow-md');
+                navbar.classList.remove('py-2', 'shadow-lg');
+            }
+        });
+
+        // 移动端菜单切换
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 工具切换功能
+        toolBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-target');
+                
+                // 更新活跃按钮状态
+                toolBtns.forEach(b => {
+                    b.classList.remove('active', 'text-primary');
+                    b.classList.add('text-gray-600');
+                });
+                btn.classList.add('active', 'text-primary');
+                btn.classList.remove('text-gray-600');
+                
+                // 隐藏所有工具内容，显示目标工具
+                toolContents.forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+                document.getElementById(target).classList.remove('hidden');
+                document.getElementById(target).classList.add('active');
+                
+                // 更新标题和描述
+                toolTitle.textContent = toolInfo[target].title;
+                toolDescription.textContent = toolInfo[target].description;
+                
+                // 关闭移动菜单
+                mobileMenu.classList.add('hidden');
+                
+                // 滚动到顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            // 设置通知样式
+            notification.textContent = message;
+            notification.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500');
+            
+            if (type === 'success') {
+                notification.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                notification.classList.add('bg-red-500');
+            } else if (type === 'info') {
+                notification.classList.add('bg-blue-500');
+            }
+            
+            // 显示通知
+            notification.classList.remove('translate-y-20', 'opacity-0');
+            notification.classList.add('translate-y-0', 'opacity-100');
+            
+            // 3秒后隐藏通知
+            setTimeout(() => {
+                notification.classList.remove('translate-y-0', 'opacity-100');
+                notification.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // 计算器功能
+        const calcDisplay = document.getElementById('calc-display');
+        const calcHistory = document.getElementById('calc-history');
+        const calcBtns = document.querySelectorAll('.calc-btn');
+        let currentValue = '0';
+        let previousValue = '';
+        let operator = null;
+        let resetOnNextInput = false;
+
+        calcBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const value = btn.getAttribute('data-value');
+                
+                // 数字和小数点
+                if (!isNaN(value) || value === '.') {
+                    handleNumberInput(value);
+                } 
+                // 运算符
+                else if (['+', '-', '*', '/', '%'].includes(value)) {
+                    handleOperator(value);
+                } 
+                // 等于
+                else if (value === '=') {
+                    calculateResult();
+                } 
+                // 清除
+                else if (value === 'C') {
+                    clearCalculator();
+                } 
+                // 正负号
+                else if (value === '±') {
+                    toggleSign();
+                }
+                
+                updateDisplay();
+            });
+        });
+
+        function handleNumberInput(value) {
+            if (resetOnNextInput) {
+                currentValue = '0';
+                resetOnNextInput = false;
+            }
+            
+            // 处理小数点
+            if (value === '.') {
+                if (!currentValue.includes('.')) {
+                    currentValue += '.';
+                }
+                return;
+            }
+            
+            // 处理数字
+            if (currentValue === '0') {
+                currentValue = value;
+            } else {
+                currentValue += value;
+            }
+        }
+
+        function handleOperator(op) {
+            if (operator !== null) {
+                calculateResult();
+            }
+            
+            previousValue = currentValue;
+            operator = op;
+            resetOnNextInput = true;
+            
+            // 更新历史显示
+            calcHistory.textContent = `${previousValue} ${getOperatorSymbol(operator)}`;
+        }
+
+        function calculateResult() {
+            if (!operator || !previousValue) return;
+            
+            const prev = parseFloat(previousValue);
+            const current = parseFloat(currentValue);
+            let result;
+            
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        showNotification('除数不能为零', 'error');
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                case '%':
+                    result = prev % current;
+                    break;
+                default:
+                    return;
+            }
+            
+            // 格式化结果，移除不必要的小数位
+            currentValue = Number.isInteger(result) ? result.toString() : result.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
+            calcHistory.textContent = `${previousValue} ${getOperatorSymbol(operator)} ${currentValue} =`;
+            previousValue = '';
+            operator = null;
+            resetOnNextInput = true;
+        }
+
+        function clearCalculator() {
+            currentValue = '0';
+            previousValue = '';
+            operator = null;
+            resetOnNextInput = false;
+            calcHistory.textContent = '';
+        }
+
+        function toggleSign() {
+            currentValue = currentValue.startsWith('-') 
+                ? currentValue.substring(1) 
+                : '-' + currentValue;
+        }
+
+        function updateDisplay() {
+            calcDisplay.textContent = currentValue;
+        }
+
+        function getOperatorSymbol(op) {
+            switch (op) {
+                case '/': return '÷';
+                case '*': return '×';
+                default: return op;
+            }
+        }
+
+        // 单位换算功能
+        const convertType = document.getElementById('convert-type');
+        const convertFromValue = document.getElementById('convert-from-value');
+        const convertToValue = document.getElementById('convert-to-value');
+        const convertFromUnit = document.getElementById('convert-from-unit');
+        const convertToUnit = document.getElementById('convert-to-unit');
+        const convertBtn = document.getElementById('convert-btn');
+        const swapUnitsBtn = document.getElementById('swap-units');
+
+        // 单位定义和转换因子
+        const unitConversions = {
+            length: {
+                units: ['毫米', '厘米', '米', '千米', '英寸', '英尺', '码', '英里'],
+                factors: {
+                    '毫米': 1,
+                    '厘米': 10,
+                    '米': 1000,
+                    '千米': 1000000,
+                    '英寸': 25.4,
+                    '英尺': 304.8,
+                    '码': 914.4,
+                    '英里': 1609344
+                }
+            },
+            weight: {
+                units: ['克', '千克', '吨', '毫克', '磅', '盎司'],
+                factors: {
+                    '克': 1,
+                    '千克': 1000,
+                    '吨': 1000000,
+                    '毫克': 0.001,
+                    '磅': 453.592,
+                    '盎司': 28.3495
+                }
+            },
+            volume: {
+                units: ['毫升', '升', '立方米', '立方厘米', '加仑(美)', '加仑(英)', '品脱(美)'],
+                factors: {
+                    '毫升': 1,
+                    '升': 1000,
+                    '立方米': 1000000,
+                    '立方厘米': 1,
+                    '加仑(美)': 3785.41,
+                    '加仑(英)': 4546.09,
+                    '品脱(美)': 473.176
+                }
+            },
+            temperature: {
+                units: ['摄氏度(°C)', '华氏度(°F)', '开尔文(K)'],
+                convert: function(value, fromUnit, toUnit) {
+                    const val = parseFloat(value);
+                    
+                    // 先转换为摄氏度
+                    let celsius;
+                    if (fromUnit === '摄氏度(°C)') {
+                        celsius = val;
+                    } else if (fromUnit === '华氏度(°F)') {
+                        celsius = (val - 32) * 5 / 9;
+                    } else if (fromUnit === '开尔文(K)') {
+                        celsius = val - 273.15;
+                    }
+                    
+                    // 从摄氏度转换到目标单位
+                    if (toUnit === '摄氏度(°C)') {
+                        return celsius;
+                    } else if (toUnit === '华氏度(°F)') {
+                        return celsius * 9 / 5 + 32;
+                    } else if (toUnit === '开尔文(K)') {
+                        return celsius + 273.15;
+                    }
+                }
+            },
+            time: {
+                units: ['毫秒', '秒', '分钟', '小时', '天', '周', '月(30天)', '年(365天)'],
+                factors: {
+                    '毫秒': 1,
+                    '秒': 1000,
+                    '分钟': 60000,
+                    '小时': 3600000,
+                    '天': 86400000,
+                    '周': 604800000,
+                    '月(30天)': 2592000000,
+                    '年(365天)': 31536000000
+                }
+            },
+            currency: {
+                units: ['人民币(CNY)', '美元(USD)', '欧元(EUR)'],
+                rates: {
+                    '人民币(CNY)': 1,
+                    '美元(USD)': 0.14,   // 1 CNY ≈ 0.14 USD (示例汇率)
+                    '欧元(EUR)': 0.13    // 1 CNY ≈ 0.13 EUR (示例汇率)
+                }
+            }
+        };
+
+        // 初始化单位下拉菜单
+        function initUnitDropdowns() {
+            const type = convertType.value;
+            const units = unitConversions[type].units;
+            
+            // 清空现有选项
+            convertFromUnit.innerHTML = '';
+            convertToUnit.innerHTML = '';
+            
+            // 添加新选项
+            units.forEach(unit => {
+                const fromOption = document.createElement('option');
+                fromOption.value = unit;
+                fromOption.textContent = unit;
+                convertFromUnit.appendChild(fromOption);
+                
+                const toOption = document.createElement('option');
+                toOption.value = unit;
+                toOption.textContent = unit;
+                convertToUnit.appendChild(toOption);
+            });
+            
+            // 设置默认目标单位
+            if (units.length > 1) {
+                convertToUnit.selectedIndex = 1;
+            }
+            
+            // 执行转换
+            performConversion();
+        }
+
+        // 执行单位转换
+        function performConversion() {
+            const type = convertType.value;
+            const fromValue = parseFloat(convertFromValue.value) || 0;
+            const fromUnit = convertFromUnit.value;
+            const toUnit = convertToUnit.value;
+            
+            if (fromUnit === toUnit) {
+                convertToValue.value = fromValue;
+                return;
+            }
+            
+            let result;
+            
+            // 处理特殊转换类型
+            if (type === 'temperature') {
+                result = unitConversions[type].convert(fromValue, fromUnit, toUnit);
+            } else if (type === 'currency') {
+                // 货币转换: 先转换为人民币，再转换为目标货币
+                const toCNY = fromValue * unitConversions[type].rates[fromUnit];
+                result = toCNY / unitConversions[type].rates[toUnit];
+            } else {
+                // 常规单位转换
+                const baseValue = fromValue * unitConversions[type].factors[fromUnit];
+                result = baseValue / unitConversions[type].factors[toUnit];
+            }
+            
+            // 格式化结果
+            convertToValue.value = Number.isInteger(result) ? result : parseFloat(result.toFixed(6));
+        }
+
+        // 交换单位
+        function swapUnits() {
+            const tempUnit = convertFromUnit.value;
+            convertFromUnit.value = convertToUnit.value;
+            convertToUnit.value = tempUnit;
+            
+            const tempValue = convertFromValue.value;
+            convertFromValue.value = convertToValue.value;
+            convertToValue.value = tempValue;
+        }
+
+        // 事件监听
+        convertType.addEventListener('change', initUnitDropdowns);
+        convertBtn.addEventListener('click', performConversion);
+        swapUnitsBtn.addEventListener('click', swapUnits);
+        convertFromValue.addEventListener('input', performConversion);
+        convertFromUnit.addEventListener('change', performConversion);
+        convertToUnit.addEventListener('change', performConversion);
+
+        // 初始化单位换算器
+        initUnitDropdowns();
+
+        // 待办清单功能
+        const todoInput = document.getElementById('todo-input');
+        const addTodoBtn = document.getElementById('add-todo');
+        const todoList = document.getElementById('todo-list');
+        const todoFilterBtns = document.querySelectorAll('.todo-filter-btn');
+        const clearCompletedBtn = document.getElementById('clear-completed');
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let currentFilter = 'all';
+
+        // 渲染待办事项
+        function renderTodos() {
+            todoList.innerHTML = '';
+            
+            // 根据当前筛选条件过滤待办事项
+            const filteredTodos = currentFilter === 'all' 
+                ? todos 
+                : currentFilter === 'active' 
+                    ? todos.filter(todo => !todo.completed) 
+                    : todos.filter(todo => todo.completed);
+            
+            if (filteredTodos.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'text-center text-neutral py-6';
+                emptyMsg.innerHTML = currentFilter === 'all' 
+                    ? '<i class="fa fa-check-circle-o mr-2"></i> 暂无待办事项，添加一个吧！' 
+                    : currentFilter === 'active'
+                        ? '<i class="fa fa-smile-o mr-2"></i> 太棒了，没有未完成的任务！'
+                        : '<i class="fa fa-trash-o mr-2"></i> 没有已完成的任务';
+                todoList.appendChild(emptyMsg);
+                return;
+            }
+            
+            // 创建待办事项元素
+            filteredTodos.forEach((todo, index) => {
+                const todoItem = document.createElement('div');
+                todoItem.className = `flex items-center p-3 bg-gray-50 rounded-lg transition-custom ${todo.completed ? 'opacity-70' : ''}`;
+                
+                todoItem.innerHTML = `
+                    <div class="flex-1 flex items-center">
+                        <input type="checkbox" class="todo-checkbox h-5 w-5 rounded-full mr-3 ${todo.completed ? 'bg-secondary text-white' : 'border-gray-300'}" data-index="${todo.id}">
+                        <span class="${todo.completed ? 'line-through text-neutral' : ''}">${todo.text}</span>
+                    </div>
+                    <button class="delete-todo text-gray-400 hover:text-red-500 p-2" data-index="${todo.id}">
+                        <i class="fa fa-times"></i>
+                    </button>
+                `;
+                
+                todoList.appendChild(todoItem);
+                
+                // 设置复选框状态
+                const checkbox = todoItem.querySelector('.todo-checkbox');
+                checkbox.checked = todo.completed;
+                
+                // 添加复选框事件监听
+                checkbox.addEventListener('change', (e) => {
+                    const id = parseInt(e.target.getAttribute('data-index'));
+                    toggleTodoCompletion(id);
+                });
+                
+                // 添加删除按钮事件监听
+                const deleteBtn = todoItem.querySelector('.delete-todo');
+                deleteBtn.addEventListener('click', (e) => {
+                    const id = parseInt(e.target.closest('.delete-todo').getAttribute('data-index'));
+                    deleteTodo(id);
+                });
+            });
+        }
+
+        // 添加待办事项
+        function addTodo() {
+            const text = todoInput.value.trim();
+            if (text === '') {
+                showNotification('请输入待办事项内容', 'error');
+                return;
+            }
+            
+            const newTodo = {
+                id: Date.now(),
+                text: text,
+                completed: false
+            };
+            
+            todos.unshift(newTodo);
+            saveTodos();
+            renderTodos();
+            todoInput.value = '';
+            showNotification('待办事项已添加', 'success');
+        }
+
+        // 切换待办事项完成状态
+        function toggleTodoCompletion(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                saveTodos();
+                renderTodos();
+                showNotification(todo.completed ? '任务已完成' : '任务标记为未完成', 'success');
+            }
+        }
+
+        // 删除待办事项
+        function deleteTodo(id) {
+            const todoIndex = todos.findIndex(t => t.id === id);
+            if (todoIndex !== -1) {
+                const deletedTodo = todos.splice(todoIndex, 1)[0];
+                saveTodos();
+                renderTodos();
+                showNotification('待办事项已删除', 'info');
+            }
+        }
+
+        // 清空已完成的待办事项
+        function clearCompletedTodos() {
+            const completedCount = todos.filter(todo => todo.completed).length;
+            if (completedCount === 0) {
+                showNotification('没有已完成的任务可清空', 'info');
+                return;
+            }
+            
+            todos = todos.filter(todo => !todo.completed);
+            saveTodos();
+            renderTodos();
+            showNotification(`已清空 ${completedCount} 个已完成任务`, 'success');
+        }
+
+        // 保存待办事项到本地存储
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // 设置筛选条件
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            // 更新筛选按钮状态
+            todoFilterBtns.forEach(btn => {
+                if (btn.getAttribute('data-filter') === filter) {
+                    btn.classList.add('active', 'bg-primary', 'text-white');
+                    btn.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                } else {
+                    btn.classList.remove('active', 'bg-primary', 'text-white');
+                    btn.classList.add('bg-gray-200', 'hover:bg-gray-300');
+                }
+            });
+            
+            renderTodos();
+        }
+
+        // 事件监听
+        addTodoBtn.addEventListener('click', addTodo);
+        todoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+        clearCompletedBtn.addEventListener('click', clearCompletedTodos);
+        todoFilterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setFilter(btn.getAttribute('data-filter'));
+            });
+        });
+
+        // 初始化待办清单
+        renderTodos();
+
+        // 笔记功能
+        const noteTitle = document.getElementById('note-title');
+        const noteContent = document.getElementById('note-content');
+        const saveNoteBtn = document.getElementById('save-note');
+        const newNoteBtn = document.getElementById('new-note');
+        const deleteNoteBtn = document.getElementById('delete-note');
+        const notesList = document.getElementById('notes-list');
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        let currentNoteId = null;
+
+        // 渲染笔记列表
+        function renderNotesList() {
+            notesList.innerHTML = '';
+            
+            if (notes.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'text-center text-neutral py-4';
+                emptyMsg.innerHTML = '<i class="fa fa-file-text-o mr-2"></i> 暂无笔记，创建一个吧！';
+                notesList.appendChild(emptyMsg);
+                return;
+            }
+            
+            // 按更新时间排序，最新的在前
+            const sortedNotes = [...notes].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            
+            sortedNotes.forEach(note => {
+                const noteItem = document.createElement('div');
+                noteItem.className = `p-3 rounded-lg cursor-pointer transition-custom ${currentNoteId === note.id ? 'bg-primary/10 border-l-4 border-primary' : 'bg-gray-50 hover:bg-gray-100'}`;
+                
+                const truncatedTitle = note.title.length > 20 ? note.title.substring(0, 20) + '...' : note.title;
+                const date = new Date(note.updatedAt);
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                
+                noteItem.innerHTML = `
+                    <div class="font-medium ${note.title ? '' : 'text-neutral italic'}">${note.title || '无标题笔记'}</div>
+                    <div class="text-xs text-neutral mt-1">${formattedDate}</div>
+                `;
+                
+                noteItem.addEventListener('click', () => {
+                    loadNote(note.id);
+                });
+                
+                notesList.appendChild(noteItem);
+            });
+        }
+
+        // 加载笔记
+        function loadNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                noteTitle.value = note.title;
+                noteContent.value = note.content;
+                currentNoteId = note.id;
+                renderNotesList();
+                showNotification('笔记已加载', 'info');
+            }
+        }
+
+        // 保存笔记
+        function saveNote() {
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+            
+            if (!title && !content) {
+                showNotification('笔记标题和内容不能都为空', 'error');
+                return;
+            }
+            
+            if (currentNoteId) {
+                // 更新现有笔记
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex !== -1) {
+                    notes[noteIndex] = {
+                        ...notes[noteIndex],
+                        title,
+                        content,
+                        updatedAt: new Date().toISOString()
+                    };
+                    showNotification('笔记已更新', 'success');
+                }
+            } else {
+                // 创建新笔记
+                const newNote = {
+                    id: Date.now(),
+                    title,
+                    content,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                notes.push(newNote);
+                currentNoteId = newNote.id;
+                showNotification('笔记已保存', 'success');
+            }
+            
+            saveNotes();
+            renderNotesList();
+        }
+
+        // 新建笔记
+        function newNote() {
+            noteTitle.value = '';
+            noteContent.value = '';
+            currentNoteId = null;
+            renderNotesList();
+            noteTitle.focus();
+        }
+
+        // 删除笔记
+        function deleteNote() {
+            if (!currentNoteId) {
+                showNotification('没有选中的笔记可删除', 'error');
+                return;
+            }
+            
+            if (confirm('确定要删除这条笔记吗？此操作不可撤销。')) {
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex !== -1) {
+                    notes.splice(noteIndex, 1);
+                    saveNotes();
+                    newNote();
+                    renderNotesList();
+                    showNotification('笔记已删除', 'info');
+                }
+            }
+        }
+
+        // 保存笔记到本地存储
+        function saveNotes() {
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        // 事件监听
+        saveNoteBtn.addEventListener('click', saveNote);
+        newNoteBtn.addEventListener('click', newNote);
+        deleteNoteBtn.addEventListener('click', deleteNote);
+        noteTitle.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                noteContent.focus();
+            }
+        });
+
+        // 初始化笔记功能
+        renderNotesList();
+        
+        // 页面加载完成后，默认显示计算器
+        document.addEventListener('DOMContentLoaded', () => {
+            // 确保计算器是默认显示的
+            document.querySelector('.tool-btn[data-target="calculator"]').click();
+        });
+    </script>
+
+
+</body></html>
